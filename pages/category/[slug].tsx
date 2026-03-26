@@ -1,31 +1,53 @@
-// CHANGED: useParams() → useRouter() from next/router
-// CHANGED: BlogCard → next/BlogCard, SEO → next/SEO
-// REMOVED: import { useParams } from "react-router-dom"
-import { useRouter } from "next/router";
-import { posts, categories } from "@/data/posts";
+import type { GetStaticPaths, GetStaticProps } from "next";
+import { posts as staticPosts, categories, type Post } from "@/data/posts";
+import { fetchSanityPosts } from "@/lib/sanity";
 import BlogCard from "@/components/next/BlogCard";
 import Newsletter from "@/components/Newsletter";
 import SEO from "@/components/next/SEO";
 import PageTransition from "@/components/PageTransition";
 
-export default function Category() {
-  // CHANGED: useParams() → useRouter() — Next.js dynamic route param
-  const router = useRouter();
-  const { slug } = router.query;
-  const slugStr = typeof slug === "string" ? slug : "";
+interface Props {
+  categoryName: string;
+  categorySlug: string;
+  categoryPosts: Post[];
+}
 
+export const getStaticPaths: GetStaticPaths = async () => {
+  return {
+    paths: categories.map((c) => ({ params: { slug: c.slug } })),
+    fallback: "blocking",
+  };
+};
+
+export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
+  const slugStr = typeof params?.slug === "string" ? params.slug : "";
   const category = categories.find((c) => c.slug === slugStr);
-  const categoryPosts = posts.filter(
+
+  const sanityPosts = await fetchSanityPosts();
+  const allPosts = [...sanityPosts, ...staticPosts];
+  const categoryPosts = allPosts.filter(
     (p) => p.category.toLowerCase().replace(/\s+/g, "-") === slugStr
   );
 
+  return {
+    props: {
+      categoryName: category?.name ?? slugStr,
+      categorySlug: slugStr,
+      categoryPosts,
+    },
+    revalidate: 60,
+  };
+};
+
+export default function Category({ categoryName, categorySlug, categoryPosts }: Props) {
+
   return (
     <PageTransition>
-      <SEO title={category?.name || "Category"} description={`Browse all ${category?.name || ""} articles on AllblogsIdea.`} />
+      <SEO title={categoryName} description={`Browse all ${categoryName} articles on AllblogsIdea.`} />
       <div className="container pt-32 pb-16">
         <div className="mb-10">
-          <span className="category-pill mb-3 inline-block">{category?.name || slugStr}</span>
-          <h1 className="section-heading">{category?.name || "Category"}</h1>
+          <span className="category-pill mb-3 inline-block">{categoryName}</span>
+          <h1 className="section-heading">{categoryName}</h1>
           <p className="text-muted-foreground mt-2">{categoryPosts.length} article{categoryPosts.length !== 1 ? "s" : ""}</p>
         </div>
 

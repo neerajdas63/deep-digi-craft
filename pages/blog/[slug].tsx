@@ -1,34 +1,50 @@
-// CHANGED: useParams() → useRouter() from next/router
-// CHANGED: Link to= → Link href= (next/link)
-// CHANGED: BlogCard → next/BlogCard, SEO → next/SEO
-// REMOVED: import { useParams, Link } from "react-router-dom"
-import { useRouter } from "next/router";
+import type { GetStaticPaths, GetStaticProps } from "next";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { PortableText } from "@portabletext/react";
 import { ArrowLeft, Clock, Calendar, Share2, Twitter, Linkedin, Copy, MessageCircle } from "lucide-react";
-import { getPostBySlug, getRelatedPosts } from "@/data/posts";
+import { posts as staticPosts, type Post } from "@/data/posts";
+import { fetchSanitySlugs, fetchSanityPostBySlug, fetchSanityPosts } from "@/lib/sanity";
 import BlogCard from "@/components/next/BlogCard";
 import Newsletter from "@/components/Newsletter";
 import SEO from "@/components/next/SEO";
 import PageTransition from "@/components/PageTransition";
 
-export default function BlogPost() {
-  // CHANGED: useParams() → useRouter() — Next.js dynamic route param
-  const router = useRouter();
-  const { slug } = router.query;
-  const post = getPostBySlug(typeof slug === "string" ? slug : "");
+interface Props {
+  post: Post;
+  related: Post[];
+}
 
-  if (!post) {
-    return (
-      <div className="container pt-32 text-center">
-        <h1 className="section-heading">Post not found</h1>
-        {/* CHANGED: Link to= → Link href= */}
-        <Link href="/blog" className="btn-gradient mt-6 inline-block py-3 px-8 text-sm">Back to Blog</Link>
-      </div>
-    );
-  }
+export const getStaticPaths: GetStaticPaths = async () => {
+  const sanitySlugs = await fetchSanitySlugs();
+  const staticSlugs = staticPosts.map((p) => p.slug);
+  const allSlugs = [...new Set([...sanitySlugs, ...staticSlugs])];
+  return {
+    paths: allSlugs.map((slug) => ({ params: { slug } })),
+    fallback: "blocking",
+  };
+};
 
-  const related = getRelatedPosts(post.slug, post.category);
+export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
+  const slug = typeof params?.slug === "string" ? params.slug : "";
+
+  // Try Sanity first, then fall back to static posts
+  const sanityPost = await fetchSanityPostBySlug(slug);
+  const post = sanityPost ?? staticPosts.find((p) => p.slug === slug) ?? null;
+
+  if (!post) return { notFound: true };
+
+  // Related posts: prefer Sanity posts in same category, then static
+  const sanityAll = await fetchSanityPosts();
+  const allPosts = [...sanityAll, ...staticPosts];
+  const related = allPosts
+    .filter((p) => p.slug !== slug && p.category === post.category)
+    .slice(0, 3);
+
+  return { props: { post, related }, revalidate: 60 };
+};
+
+export default function BlogPost({ post, related }: Props) {
 
   // window.location.href is safe here (client-side only — guarded)
   const shareUrl = typeof window !== "undefined" ? window.location.href : "";
@@ -84,8 +100,13 @@ export default function BlogPost() {
               prose-a:text-primary prose-a:no-underline hover:prose-a:underline
               prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:pl-6 prose-blockquote:italic prose-blockquote:text-muted-foreground
               prose-strong:text-foreground prose-code:text-accent"
-            dangerouslySetInnerHTML={{ __html: post.content }}
-          />
+          >
+            {post.portableContent ? (
+              <PortableText value={post.portableContent} />
+            ) : (
+              <div dangerouslySetInnerHTML={{ __html: post.content }} />
+            )}
+          </article>
 
           {/* Sidebar */}
           <aside className="hidden lg:block">

@@ -1,12 +1,10 @@
-// CHANGED: react-router-dom Link → next/link Link
-// CHANGED: SEO component → next/SEO (uses next/head instead of react-helmet-async)
-// CHANGED: BlogCard → next/BlogCard (uses next/link internally)
-// REMOVED: BrowserRouter / Routes / Route — not needed in Next.js (file-based routing)
 import { useEffect, useState } from "react";
+import type { GetStaticProps } from "next";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, Bot, TrendingUp, BarChart3, Cpu, Zap, Briefcase } from "lucide-react";
-import { posts, categories, getFeaturedPost } from "@/data/posts";
+import { posts as staticPosts, categories, type Post } from "@/data/posts";
+import { fetchSanityPosts } from "@/lib/sanity";
 import BlogCard from "@/components/next/BlogCard";
 import Newsletter from "@/components/Newsletter";
 import SEO from "@/components/next/SEO";
@@ -51,9 +49,18 @@ function useTypewriter(words: string[], speed = 100, pause = 2000) {
   return text;
 }
 
-export default function Home() {
-  const featured = getFeaturedPost()!;
-  const latestPosts = posts.slice(0, 6);
+interface Props { allPosts: Post[] }
+
+export const getStaticProps: GetStaticProps<Props> = async () => {
+  const sanityPosts = await fetchSanityPosts();
+  // Sanity posts come first so newest CMS content appears at the top
+  const allPosts = [...sanityPosts, ...staticPosts];
+  return { props: { allPosts }, revalidate: 60 };
+};
+
+export default function Home({ allPosts }: Props) {
+  const featured = allPosts.find((p) => p.featured) ?? allPosts[0];
+  const latestPosts = allPosts.slice(0, 6);
   const typedText = useTypewriter(typewriterWords);
 
   return (
@@ -111,7 +118,7 @@ export default function Home() {
             transition={{ delay: 0.6, duration: 0.6 }}
             className="hidden lg:block absolute right-8 top-1/2 -translate-y-1/2 w-80 space-y-4"
           >
-            {posts.slice(0, 3).map((post, i) => (
+            {allPosts.slice(0, 3).map((post, i) => (
               <Link
                 key={post.id}
                 href={`/blog/${post.slug}`}
@@ -135,7 +142,7 @@ export default function Home() {
       <section id="featured" className="container py-16">
         <BlogCard post={featured} featured />
         <div className="grid md:grid-cols-2 gap-6 mt-6">
-          {posts.slice(1, 3).map((post) => (
+          {allPosts.slice(1, 3).map((post) => (
             <BlogCard key={post.id} post={post} />
           ))}
         </div>

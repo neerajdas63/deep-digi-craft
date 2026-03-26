@@ -1,22 +1,29 @@
-// CHANGED: BlogCard → next/BlogCard (next/link internally)
-// CHANGED: SEO → next/SEO (next/head internally)
-// No react-router imports needed — Next.js handles routing via file system
 import { useState } from "react";
-import { posts } from "@/data/posts";
+import type { GetStaticProps } from "next";
+import { posts as staticPosts, type Post } from "@/data/posts";
+import { fetchSanityPosts } from "@/lib/sanity";
 import BlogCard from "@/components/next/BlogCard";
 import Newsletter from "@/components/Newsletter";
 import SEO from "@/components/next/SEO";
 import PageTransition from "@/components/PageTransition";
 
-const filters = ["All", "AI Tools", "Finance", "Trading", "Tech Gadgets", "Productivity", "Business"];
+const filters = ["All", "AI Tools", "Finance", "Trading", "Tech Gadgets", "Productivity", "Business", "Technology"];
 const sortOptions = ["Latest", "Popular", "Trending"];
 
-export default function Blog() {
+interface Props { allPosts: Post[] }
+
+export const getStaticProps: GetStaticProps<Props> = async () => {
+  const sanityPosts = await fetchSanityPosts();
+  const allPosts = [...sanityPosts, ...staticPosts];
+  return { props: { allPosts }, revalidate: 60 };
+};
+
+export default function Blog({ allPosts }: Props) {
   const [activeFilter, setActiveFilter] = useState("All");
   const [sortBy, setSortBy] = useState("Latest");
   const [visibleCount, setVisibleCount] = useState(6);
 
-  const filtered = activeFilter === "All" ? posts : posts.filter((p) => p.category === activeFilter);
+  const filtered = activeFilter === "All" ? allPosts : allPosts.filter((p) => p.category === activeFilter);
 
   return (
     <PageTransition>

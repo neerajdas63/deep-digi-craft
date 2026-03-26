@@ -4,6 +4,8 @@ export interface Post {
   title: string;
   excerpt: string;
   content: string;
+  /** PortableText blocks — present only for posts fetched from Sanity */
+  portableContent?: any[];
   category: string;
   image: string;
   author: { name: string; avatar: string };
@@ -20,6 +22,7 @@ export const categories = [
   { name: "Tech Gadgets", slug: "tech-gadgets", icon: "Cpu", count: 1 },
   { name: "Productivity", slug: "productivity", icon: "Zap", count: 1 },
   { name: "Business", slug: "business", icon: "Briefcase", count: 1 },
+  { name: "Technology", slug: "technology", icon: "Cpu", count: 0 },
 ];
 
 const author = {

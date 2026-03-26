@@ -87,7 +87,7 @@ export default function Contact() {
                 <div className="space-y-4 text-sm">
                   <div className="flex items-center gap-3 text-muted-foreground">
                     <Mail size={16} className="text-primary flex-shrink-0" />
-                    hello@techpulse.blog
+                    allblogsideas@gmail.com
                   </div>
                   <div className="flex items-center gap-3 text-muted-foreground">
                     <MapPin size={16} className="text-primary flex-shrink-0" />

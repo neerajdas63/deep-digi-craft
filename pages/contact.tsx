@@ -1,6 +1,8 @@
+// CHANGED: SEO → next/SEO (next/head instead of react-helmet-async)
+// No react-router imports — Contact page has no Link usage
 import { motion } from "framer-motion";
 import { Mail, MapPin, Send, Twitter, Linkedin, Youtube, Github } from "lucide-react";
-import SEO from "@/components/SEO";
+import SEO from "@/components/next/SEO";
 import PageTransition from "@/components/PageTransition";
 
 const socials = [

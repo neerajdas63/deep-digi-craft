@@ -1,8 +1,11 @@
+// CHANGED: BlogCard → next/BlogCard (next/link internally)
+// CHANGED: SEO → next/SEO (next/head internally)
+// No react-router imports needed — Next.js handles routing via file system
 import { useState } from "react";
 import { posts } from "@/data/posts";
-import BlogCard from "@/components/BlogCard";
+import BlogCard from "@/components/next/BlogCard";
 import Newsletter from "@/components/Newsletter";
-import SEO from "@/components/SEO";
+import SEO from "@/components/next/SEO";
 import PageTransition from "@/components/PageTransition";
 
 const filters = ["All", "AI Tools", "Finance", "Trading", "Tech Gadgets", "Productivity", "Business"];

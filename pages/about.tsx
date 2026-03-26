@@ -1,7 +1,10 @@
+// CHANGED: Link to= → Link href= (next/link)
+// CHANGED: SEO → next/SEO
+// REMOVED: import { Link } from "react-router-dom"
+import Link from "next/link";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
 import { ArrowRight, Bot, TrendingUp, Code, Smartphone, Lightbulb, Zap } from "lucide-react";
-import SEO from "@/components/SEO";
+import SEO from "@/components/next/SEO";
 import PageTransition from "@/components/PageTransition";
 
 const timeline = [
@@ -37,7 +40,8 @@ export default function About() {
               AllblogsIdea was born from a simple frustration: most tech and tool reviews are either sponsored fluff or surface-level listicles. We go deeper — testing every tool ourselves and sharing what actually works for Indian professionals.
             </motion.p>
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-              <Link to="/blog" className="btn-gradient inline-flex items-center gap-2 py-3 px-8 text-sm">
+              {/* CHANGED: Link to= → Link href= */}
+              <Link href="/blog" className="btn-gradient inline-flex items-center gap-2 py-3 px-8 text-sm">
                 Read Our Articles <ArrowRight size={16} />
               </Link>
             </motion.div>
@@ -105,7 +109,8 @@ export default function About() {
         <div className="text-center glass-card p-12 rounded-2xl">
           <h2 className="section-heading mb-4">Got a question or collaboration idea?</h2>
           <p className="text-muted-foreground mb-8">We'd love to hear from you.</p>
-          <Link to="/contact" className="btn-gradient inline-flex items-center gap-2 py-3 px-8 text-sm">
+          {/* CHANGED: Link to= → Link href= */}
+          <Link href="/contact" className="btn-gradient inline-flex items-center gap-2 py-3 px-8 text-sm">
             Get in Touch <ArrowRight size={16} />
           </Link>
         </div>

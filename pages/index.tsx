@@ -1,11 +1,15 @@
+// CHANGED: react-router-dom Link → next/link Link
+// CHANGED: SEO component → next/SEO (uses next/head instead of react-helmet-async)
+// CHANGED: BlogCard → next/BlogCard (uses next/link internally)
+// REMOVED: BrowserRouter / Routes / Route — not needed in Next.js (file-based routing)
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, Bot, TrendingUp, BarChart3, Cpu, Zap, Briefcase } from "lucide-react";
 import { posts, categories, getFeaturedPost } from "@/data/posts";
-import BlogCard from "@/components/BlogCard";
+import BlogCard from "@/components/next/BlogCard";
 import Newsletter from "@/components/Newsletter";
-import SEO from "@/components/SEO";
+import SEO from "@/components/next/SEO";
 import PageTransition from "@/components/PageTransition";
 
 const iconMap: Record<string, React.ElementType> = { Bot, TrendingUp, BarChart3, Cpu, Zap, Briefcase };
@@ -58,7 +62,6 @@ export default function Home() {
 
       {/* Hero */}
       <section className="relative min-h-[90vh] flex items-center overflow-hidden">
-        {/* Animated gradient bg */}
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-accent/5 animate-gradient-shift" style={{ backgroundSize: "200% 200%" }} />
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[120px] animate-glow-pulse" />
@@ -91,7 +94,8 @@ export default function Home() {
               transition={{ delay: 0.4, duration: 0.5 }}
               className="flex flex-wrap gap-4"
             >
-              <Link to="/blog" className="btn-gradient py-3 px-8 text-sm inline-flex items-center gap-2">
+              {/* CHANGED: Link to= → Link href= */}
+              <Link href="/blog" className="btn-gradient py-3 px-8 text-sm inline-flex items-center gap-2">
                 Explore Articles <ArrowRight size={16} />
               </Link>
               <a href="#featured" className="btn-outline-glow py-3 px-8 text-sm">
@@ -110,7 +114,7 @@ export default function Home() {
             {posts.slice(0, 3).map((post, i) => (
               <Link
                 key={post.id}
-                to={`/blog/${post.slug}`}
+                href={`/blog/${post.slug}`}
                 className="block glass-card-hover p-4 transition-transform hover:-translate-y-1"
                 style={{ animationDelay: `${i * 0.1}s` }}
               >
@@ -136,7 +140,7 @@ export default function Home() {
           ))}
         </div>
         <div className="text-center mt-10">
-          <Link to="/blog" className="btn-outline-glow inline-flex items-center gap-2 py-3 px-8 text-sm">
+          <Link href="/blog" className="btn-outline-glow inline-flex items-center gap-2 py-3 px-8 text-sm">
             View All Posts <ArrowRight size={16} />
           </Link>
         </div>
@@ -157,7 +161,7 @@ export default function Home() {
                 transition={{ delay: i * 0.05 }}
               >
                 <Link
-                  to={`/category/${cat.slug}`}
+                  href={`/category/${cat.slug}`}
                   className="glass-card-hover flex flex-col items-center gap-3 p-6 text-center group"
                 >
                   <div className="p-3 rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">

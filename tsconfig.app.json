@@ -27,9 +27,11 @@
     "types": [
       "vitest/globals"
     ],
-    "useDefineForClassFields": true
+    "useDefineForClassFields": true,
+    "baseUrl": "."
   },
   "include": [
-    "src"
+    "src",
+    "pages"
   ]
 }

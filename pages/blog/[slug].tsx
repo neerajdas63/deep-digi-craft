@@ -1,27 +1,36 @@
-import { useParams, Link } from "react-router-dom";
+// CHANGED: useParams() → useRouter() from next/router
+// CHANGED: Link to= → Link href= (next/link)
+// CHANGED: BlogCard → next/BlogCard, SEO → next/SEO
+// REMOVED: import { useParams, Link } from "react-router-dom"
+import { useRouter } from "next/router";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowLeft, Clock, Calendar, Share2, Twitter, Linkedin, Copy, MessageCircle } from "lucide-react";
 import { getPostBySlug, getRelatedPosts } from "@/data/posts";
-import BlogCard from "@/components/BlogCard";
+import BlogCard from "@/components/next/BlogCard";
 import Newsletter from "@/components/Newsletter";
-import SEO from "@/components/SEO";
+import SEO from "@/components/next/SEO";
 import PageTransition from "@/components/PageTransition";
 
 export default function BlogPost() {
-  const { slug } = useParams();
-  const post = getPostBySlug(slug || "");
+  // CHANGED: useParams() → useRouter() — Next.js dynamic route param
+  const router = useRouter();
+  const { slug } = router.query;
+  const post = getPostBySlug(typeof slug === "string" ? slug : "");
 
   if (!post) {
     return (
       <div className="container pt-32 text-center">
         <h1 className="section-heading">Post not found</h1>
-        <Link to="/blog" className="btn-gradient mt-6 inline-block py-3 px-8 text-sm">Back to Blog</Link>
+        {/* CHANGED: Link to= → Link href= */}
+        <Link href="/blog" className="btn-gradient mt-6 inline-block py-3 px-8 text-sm">Back to Blog</Link>
       </div>
     );
   }
 
   const related = getRelatedPosts(post.slug, post.category);
 
+  // window.location.href is safe here (client-side only — guarded)
   const shareUrl = typeof window !== "undefined" ? window.location.href : "";
   const shareLinks = [
     { icon: Twitter, href: `https://twitter.com/intent/tweet?url=${shareUrl}&text=${post.title}`, label: "X" },
@@ -47,7 +56,8 @@ export default function BlogPost() {
         </div>
         <div className="absolute bottom-0 left-0 right-0">
           <div className="container pb-10 pt-20">
-            <Link to="/blog" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors">
+            {/* CHANGED: Link to= → Link href= */}
+            <Link href="/blog" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors">
               <ArrowLeft size={16} /> Back to Blog
             </Link>
             <span className="category-pill mb-4 block w-fit">{post.category}</span>

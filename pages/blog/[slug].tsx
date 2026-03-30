@@ -55,6 +55,56 @@ export default function BlogPost({ post, related }: Props) {
   ];
 
   const portableTextComponents = {
+    // Map each block style to the correct HTML element with spacing
+    block: {
+      normal: ({ children }: any) => (
+        <p className="text-muted-foreground leading-relaxed mb-5">{children}</p>
+      ),
+      h2: ({ children }: any) => (
+        <h2 className="font-heading text-2xl md:text-3xl font-bold text-foreground mt-12 mb-4">{children}</h2>
+      ),
+      h3: ({ children }: any) => (
+        <h3 className="font-heading text-xl md:text-2xl font-bold text-foreground mt-10 mb-3">{children}</h3>
+      ),
+      h4: ({ children }: any) => (
+        <h4 className="font-heading text-lg font-bold text-foreground mt-8 mb-2">{children}</h4>
+      ),
+      blockquote: ({ children }: any) => (
+        <blockquote className="border-l-4 border-primary pl-5 italic text-muted-foreground my-6">
+          {children}
+        </blockquote>
+      ),
+    },
+    list: {
+      bullet: ({ children }: any) => (
+        <ul className="list-disc list-outside pl-6 mb-5 space-y-2 text-muted-foreground">{children}</ul>
+      ),
+      number: ({ children }: any) => (
+        <ol className="list-decimal list-outside pl-6 mb-5 space-y-2 text-muted-foreground">{children}</ol>
+      ),
+    },
+    listItem: {
+      bullet: ({ children }: any) => <li className="leading-relaxed">{children}</li>,
+      number: ({ children }: any) => <li className="leading-relaxed">{children}</li>,
+    },
+    marks: {
+      strong: ({ children }: any) => <strong className="font-bold text-foreground">{children}</strong>,
+      em: ({ children }: any) => <em className="italic">{children}</em>,
+      code: ({ children }: any) => (
+        <code className="bg-secondary text-accent px-1.5 py-0.5 rounded text-sm font-mono">{children}</code>
+      ),
+      underline: ({ children }: any) => <span className="underline">{children}</span>,
+      link: ({ value, children }: any) => (
+        <a
+          href={value?.href}
+          target={value?.href?.startsWith("http") ? "_blank" : undefined}
+          rel="noopener noreferrer"
+          className="text-primary underline hover:opacity-80 transition-opacity"
+        >
+          {children}
+        </a>
+      ),
+    },
     types: {
       table: ({ value }: any) => (
         <div className="overflow-x-auto my-8 not-prose">
@@ -146,18 +196,19 @@ export default function BlogPost({ post, related }: Props) {
       {/* Content */}
       <div className="container py-12">
         <div className="grid lg:grid-cols-[1fr_280px] gap-12 max-w-5xl mx-auto">
-          <article
-            className="prose prose-invert prose-lg max-w-none
-              prose-headings:font-heading prose-headings:font-bold prose-headings:text-foreground
-              prose-p:text-muted-foreground prose-p:leading-relaxed
-              prose-a:text-primary prose-a:no-underline hover:prose-a:underline
-              prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:pl-6 prose-blockquote:italic prose-blockquote:text-muted-foreground
-              prose-strong:text-foreground prose-code:text-accent"
-          >
+          <article className="max-w-none">
             {post.portableContent ? (
               <PortableText value={post.portableContent} components={portableTextComponents} />
             ) : (
-              <div dangerouslySetInnerHTML={{ __html: post.content }} />
+              <div
+                className="prose prose-invert prose-lg max-w-none
+                  prose-headings:font-heading prose-headings:font-bold prose-headings:text-foreground
+                  prose-p:text-muted-foreground prose-p:leading-relaxed
+                  prose-a:text-primary prose-a:no-underline hover:prose-a:underline
+                  prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:pl-6 prose-blockquote:italic prose-blockquote:text-muted-foreground
+                  prose-strong:text-foreground prose-code:text-accent"
+                dangerouslySetInnerHTML={{ __html: post.content }}
+              />
             )}
           </article>
 

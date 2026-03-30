@@ -54,6 +54,59 @@ export default function BlogPost({ post, related }: Props) {
     { icon: Linkedin, href: `https://linkedin.com/sharing/share-offsite/?url=${shareUrl}`, label: "LinkedIn" },
   ];
 
+  const portableTextComponents = {
+    types: {
+      table: ({ value }: any) => (
+        <div className="overflow-x-auto my-8 not-prose">
+          {value.caption && (
+            <p className="text-xs text-muted-foreground mb-2 text-center">{value.caption}</p>
+          )}
+          <table className="w-full border-collapse text-sm">
+            <tbody>
+              {(value.rows ?? []).map((row: any, ri: number) => (
+                <tr
+                  key={row._key ?? ri}
+                  className={
+                    ri === 0
+                      ? "bg-primary/10"
+                      : "border-b border-border hover:bg-muted/20 transition-colors"
+                  }
+                >
+                  {(row.cells ?? []).map((cell: string, ci: number) =>
+                    ri === 0 ? (
+                      <th
+                        key={ci}
+                        className="px-4 py-3 text-left font-semibold border border-border text-foreground whitespace-nowrap"
+                      >
+                        {cell}
+                      </th>
+                    ) : (
+                      <td key={ci} className="px-4 py-3 border border-border text-muted-foreground">
+                        {cell}
+                      </td>
+                    )
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ),
+      image: ({ value }: any) => {
+        const src = value.imageUrl ?? value.asset?.url;
+        if (!src) return null;
+        return (
+          <figure className="my-8 not-prose">
+            <img src={src} alt={value.alt ?? ""} className="w-full rounded-xl object-cover" />
+            {value.caption && (
+              <figcaption className="text-center text-xs text-muted-foreground mt-2">{value.caption}</figcaption>
+            )}
+          </figure>
+        );
+      },
+    },
+  };
+
   return (
     <PageTransition>
       <SEO
@@ -102,7 +155,7 @@ export default function BlogPost({ post, related }: Props) {
               prose-strong:text-foreground prose-code:text-accent"
           >
             {post.portableContent ? (
-              <PortableText value={post.portableContent} />
+              <PortableText value={post.portableContent} components={portableTextComponents} />
             ) : (
               <div dangerouslySetInnerHTML={{ __html: post.content }} />
             )}
@@ -153,7 +206,7 @@ export default function BlogPost({ post, related }: Props) {
           <div>
             <h4 className="font-heading font-semibold mb-1">Written by {post.author.name}</h4>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Tech enthusiast, trader, and AI tools reviewer. Helping young Indian professionals make smarter decisions with technology and money.
+              {post.author.bio ?? "Tech enthusiast, trader, and AI tools reviewer. Helping young Indian professionals make smarter decisions with technology and money."}
             </p>
           </div>
         </motion.div>

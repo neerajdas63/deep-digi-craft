@@ -8,7 +8,7 @@ export interface Post {
   portableContent?: any[];
   category: string;
   image: string;
-  author: { name: string; avatar: string };
+  author: { name: string; avatar: string; bio?: string };
   date: string;
   readTime: string;
   tags: string[];

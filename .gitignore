@@ -25,3 +25,7 @@ dist-ssr
 
 .next/
 out/
+
+# local env — never commit secrets
+.env.local
+.env*.local

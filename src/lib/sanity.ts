@@ -5,7 +5,7 @@ export const sanityClient = createClient({
   projectId: "e5hboz3o",
   dataset: "production",
   apiVersion: "2026-03-26",
-  useCdn: true,
+  useCdn: false, // always fetch fresh — CDN delays new posts from appearing
 });
 
 const AUTHOR_AVATAR =
@@ -19,6 +19,11 @@ function formatDate(iso?: string): string {
 }
 
 function transformPost(raw: any, includeBody = false): Post {
+  // Support both old string `author` field and new reference `author->{name,avatar,bio}`
+  const authorName: string = raw.authorName ?? raw.author ?? "Neeraj";
+  const authorAvatar: string = raw.authorAvatar ?? AUTHOR_AVATAR;
+  const authorBio: string | undefined = raw.authorBio ?? undefined;
+
   return {
     id: raw._id,
     slug: raw.slug?.current ?? raw._id,
@@ -29,8 +34,9 @@ function transformPost(raw: any, includeBody = false): Post {
     category: raw.category ?? "Technology",
     image: raw.mainImage ?? FALLBACK_IMAGE,
     author: {
-      name: raw.author ?? "Neeraj",
-      avatar: AUTHOR_AVATAR,
+      name: authorName,
+      avatar: authorAvatar,
+      bio: authorBio,
     },
     date: formatDate(raw.publishedAt),
     readTime: raw.readTime ?? "5 min read",
@@ -39,12 +45,17 @@ function transformPost(raw: any, includeBody = false): Post {
   };
 }
 
-const LIST_FIELDS = `_id, title, slug, excerpt, mainImage, publishedAt, category, author, readTime, tags, featured`;
+const LIST_FIELDS = `
+  _id, title, slug, excerpt, mainImage, publishedAt, category, readTime, tags, featured,
+  "authorName": coalesce(author->name, author),
+  "authorAvatar": author->avatar,
+  "authorBio": author->bio
+`.trim();
 
 /** Fetch all published Sanity posts (without body — for listing pages) */
 export async function fetchSanityPosts(): Promise<Post[]> {
   try {
-    const query = `*[_type == "post" && defined(slug.current)] | order(publishedAt desc) { ${LIST_FIELDS} }`;
+    const query = `*[_type == "post" && defined(slug.current) && !(_id in path("drafts.**"))] | order(publishedAt desc) { ${LIST_FIELDS} }`;
     const raw: any[] = await sanityClient.fetch(query);
     return raw.map((p) => transformPost(p));
   } catch {
@@ -55,7 +66,7 @@ export async function fetchSanityPosts(): Promise<Post[]> {
 /** Fetch a single Sanity post by slug (includes PortableText body) */
 export async function fetchSanityPostBySlug(slug: string): Promise<Post | null> {
   try {
-    const query = `*[_type == "post" && slug.current == $slug][0] { ${LIST_FIELDS}, body }`;
+    const query = `*[_type == "post" && slug.current == $slug && !(_id in path("drafts.**"))][0] { ${LIST_FIELDS}, body, "authorBio": author->bio }`;
     const raw = await sanityClient.fetch(query, { slug });
     if (!raw) return null;
     return transformPost(raw, true);
@@ -67,7 +78,7 @@ export async function fetchSanityPostBySlug(slug: string): Promise<Post | null> 
 /** Fetch all slugs from Sanity (for getStaticPaths) */
 export async function fetchSanitySlugs(): Promise<string[]> {
   try {
-    const query = `*[_type == "post" && defined(slug.current)].slug.current`;
+    const query = `*[_type == "post" && defined(slug.current) && !(_id in path("drafts.**"))].slug.current`;
     return await sanityClient.fetch(query);
   } catch {
     return [];

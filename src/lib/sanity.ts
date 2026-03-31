@@ -42,7 +42,7 @@ function transformPost(raw: any, includeBody = false): Post {
     readTime: raw.readTime ?? "5 min read",
     tags: Array.isArray(raw.tags) ? raw.tags : [],
     featured: raw.featured ?? false,
-    seo: raw.seo ?? undefined,
+    ...(raw.seo ? { seo: raw.seo } : {}),
   };
 }
 

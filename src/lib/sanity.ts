@@ -42,11 +42,15 @@ function transformPost(raw: any, includeBody = false): Post {
     readTime: raw.readTime ?? "5 min read",
     tags: Array.isArray(raw.tags) ? raw.tags : [],
     featured: raw.featured ?? false,
+    seo: raw.seo ?? undefined,
   };
 }
 
+const SEO_FIELDS = `seo { metaTitle, metaDescription, focusKeyword, canonicalUrl, noIndex, noFollow, ogTitle, ogDescription, ogImage, twitterTitle, twitterDescription, twitterImage }`;
+
 const LIST_FIELDS = `
   _id, title, slug, excerpt, mainImage, publishedAt, category, readTime, tags, featured,
+  ${SEO_FIELDS},
   "authorName": coalesce(author->name, author),
   "authorAvatar": author->avatar,
   "authorBio": author->bio
@@ -70,6 +74,41 @@ export async function fetchSanityPostBySlug(slug: string): Promise<Post | null> 
     const raw = await sanityClient.fetch(query, { slug });
     if (!raw) return null;
     return transformPost(raw, true);
+  } catch {
+    return null;
+  }
+}
+
+export interface SiteSEO {
+  metaTitle?: string;
+  metaDescription?: string;
+  focusKeyword?: string;
+  canonicalUrl?: string;
+  noIndex?: boolean;
+  noFollow?: boolean;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImage?: string;
+  twitterTitle?: string;
+  twitterDescription?: string;
+  twitterImage?: string;
+}
+
+export interface SiteSettings {
+  siteTitle: string;
+  seo?: SiteSEO;
+}
+
+/** Fetch the singleton siteSettings document */
+export async function fetchSiteSettings(): Promise<SiteSettings | null> {
+  try {
+    const query = `*[_type == "siteSettings" && !(_id in path("drafts.**"))][0] {
+      siteTitle,
+      seo { metaTitle, metaDescription, focusKeyword, canonicalUrl, noIndex, noFollow, ogTitle, ogDescription, ogImage, twitterTitle, twitterDescription, twitterImage }
+    }`;
+    const raw = await sanityClient.fetch(query);
+    if (!raw) return null;
+    return raw as SiteSettings;
   } catch {
     return null;
   }

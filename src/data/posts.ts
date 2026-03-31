@@ -1,3 +1,18 @@
+export interface PostSEO {
+  metaTitle?: string;
+  metaDescription?: string;
+  focusKeyword?: string;
+  canonicalUrl?: string;
+  noIndex?: boolean;
+  noFollow?: boolean;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImage?: string;
+  twitterTitle?: string;
+  twitterDescription?: string;
+  twitterImage?: string;
+}
+
 export interface Post {
   id: string;
   slug: string;
@@ -13,6 +28,8 @@ export interface Post {
   readTime: string;
   tags: string[];
   featured?: boolean;
+  /** Full RankMath-style SEO fields — set in Sanity Studio */
+  seo?: PostSEO;
 }
 
 export const categories = [

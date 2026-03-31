@@ -1,6 +1,4 @@
 // Next.js version of SEO — uses next/head instead of react-helmet-async
-// REMOVED: import { Helmet } from "react-helmet-async"
-// ADDED:   import Head from "next/head"
 import Head from "next/head";
 
 interface SEOProps {
@@ -10,29 +8,79 @@ interface SEOProps {
   url?: string;
   type?: string;
   article?: { publishedTime?: string; tags?: string[] };
+  // RankMath-equivalent overrides
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImage?: string;
+  twitterTitle?: string;
+  twitterDescription?: string;
+  twitterImage?: string;
+  canonicalUrl?: string;
+  noIndex?: boolean;
+  noFollow?: boolean;
 }
 
-export default function SEO({ title, description, image, url, type = "website", article }: SEOProps) {
+export default function SEO({
+  title,
+  description,
+  image,
+  url,
+  type = "website",
+  article,
+  ogTitle,
+  ogDescription,
+  ogImage,
+  twitterTitle,
+  twitterDescription,
+  twitterImage,
+  canonicalUrl,
+  noIndex = false,
+  noFollow = false,
+}: SEOProps) {
   const siteName = "AllblogsIdea";
   const fullTitle = `${title} | ${siteName}`;
   const defaultImage = "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&h=630&fit=crop";
-  // REMOVED: window.location.href (not safe in SSR) — url prop with fallback used instead
-  const canonicalUrl = url || "";
+
+  const resolvedCanonical = canonicalUrl || url || "";
+  const resolvedOgTitle = ogTitle || fullTitle;
+  const resolvedOgDescription = ogDescription || description;
+  const resolvedOgImage = ogImage || image || defaultImage;
+  const resolvedTwitterTitle = twitterTitle || resolvedOgTitle;
+  const resolvedTwitterDescription = twitterDescription || resolvedOgDescription;
+  const resolvedTwitterImage = twitterImage || resolvedOgImage;
+
+  const robotsContent = [noIndex ? "noindex" : "index", noFollow ? "nofollow" : "follow"].join(", ");
 
   return (
     <Head>
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
-      {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
-      <meta property="og:title" content={fullTitle} />
-      <meta property="og:description" content={description} />
-      <meta property="og:image" content={image || defaultImage} />
+      <meta name="robots" content={robotsContent} />
+      {resolvedCanonical && <link rel="canonical" href={resolvedCanonical} />}
+
+      {/* Open Graph */}
+      <meta property="og:site_name" content={siteName} />
+      <meta property="og:title" content={resolvedOgTitle} />
+      <meta property="og:description" content={resolvedOgDescription} />
+      <meta property="og:image" content={resolvedOgImage} />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
       <meta property="og:type" content={type} />
+      {resolvedCanonical && <meta property="og:url" content={resolvedCanonical} />}
+
+      {/* Twitter / X */}
       <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={fullTitle} />
-      <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={image || defaultImage} />
-      {article?.publishedTime && <meta property="article:published_time" content={article.publishedTime} />}
+      <meta name="twitter:title" content={resolvedTwitterTitle} />
+      <meta name="twitter:description" content={resolvedTwitterDescription} />
+      <meta name="twitter:image" content={resolvedTwitterImage} />
+
+      {/* Article-specific */}
+      {article?.publishedTime && (
+        <meta property="article:published_time" content={article.publishedTime} />
+      )}
+      {article?.tags?.map((tag) => (
+        <meta key={tag} property="article:tag" content={tag} />
+      ))}
     </Head>
   );
 }

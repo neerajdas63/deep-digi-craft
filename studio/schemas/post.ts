@@ -88,6 +88,12 @@ export default defineType({
       type: "boolean",
       initialValue: false,
     }),
+    defineField({
+      name: "seo",
+      title: "SEO",
+      type: "seo",
+      description: "Search engine & social media optimisation settings for this post.",
+    }),
   ],
   preview: {
     select: {

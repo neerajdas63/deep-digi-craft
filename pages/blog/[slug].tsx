@@ -160,11 +160,20 @@ export default function BlogPost({ post, related }: Props) {
   return (
     <PageTransition>
       <SEO
-        title={post.title}
-        description={post.excerpt}
+        title={post.seo?.metaTitle || post.title}
+        description={post.seo?.metaDescription || post.excerpt}
         image={post.image}
         type="article"
         article={{ publishedTime: post.date, tags: post.tags }}
+        ogTitle={post.seo?.ogTitle}
+        ogDescription={post.seo?.ogDescription}
+        ogImage={post.seo?.ogImage}
+        twitterTitle={post.seo?.twitterTitle}
+        twitterDescription={post.seo?.twitterDescription}
+        twitterImage={post.seo?.twitterImage}
+        canonicalUrl={post.seo?.canonicalUrl}
+        noIndex={post.seo?.noIndex}
+        noFollow={post.seo?.noFollow}
       />
 
       {/* Hero */}

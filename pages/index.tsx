@@ -4,7 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, Bot, TrendingUp, BarChart3, Cpu, Zap, Briefcase } from "lucide-react";
 import { posts as staticPosts, categories, type Post } from "@/data/posts";
-import { fetchSanityPosts } from "@/lib/sanity";
+import { fetchSanityPosts, fetchSiteSettings, type SiteSettings } from "@/lib/sanity";
 import BlogCard from "@/components/next/BlogCard";
 import Newsletter from "@/components/Newsletter";
 import SEO from "@/components/next/SEO";
@@ -49,23 +49,38 @@ function useTypewriter(words: string[], speed = 100, pause = 2000) {
   return text;
 }
 
-interface Props { allPosts: Post[] }
+interface Props { allPosts: Post[]; siteSettings: SiteSettings | null }
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
-  const sanityPosts = await fetchSanityPosts();
+  const [sanityPosts, siteSettings] = await Promise.all([
+    fetchSanityPosts(),
+    fetchSiteSettings(),
+  ]);
   // Sanity posts come first so newest CMS content appears at the top
   const allPosts = [...sanityPosts, ...staticPosts];
-  return { props: { allPosts }, revalidate: 60 };
+  return { props: { allPosts, siteSettings }, revalidate: 60 };
 };
 
-export default function Home({ allPosts }: Props) {
+export default function Home({ allPosts, siteSettings }: Props) {
   const featured = allPosts.find((p) => p.featured) ?? allPosts[0];
   const latestPosts = allPosts.slice(0, 6);
   const typedText = useTypewriter(typewriterWords);
 
   return (
     <PageTransition>
-      <SEO title="Home" description="Discover the best AI tools, tech reviews, and finance tips for young Indian professionals." />
+      <SEO
+        title={siteSettings?.seo?.metaTitle || "Home"}
+        description={siteSettings?.seo?.metaDescription || "Discover the best AI tools, tech reviews, and finance tips for young Indian professionals."}
+        ogTitle={siteSettings?.seo?.ogTitle}
+        ogDescription={siteSettings?.seo?.ogDescription}
+        ogImage={siteSettings?.seo?.ogImage}
+        twitterTitle={siteSettings?.seo?.twitterTitle}
+        twitterDescription={siteSettings?.seo?.twitterDescription}
+        twitterImage={siteSettings?.seo?.twitterImage}
+        canonicalUrl={siteSettings?.seo?.canonicalUrl}
+        noIndex={siteSettings?.seo?.noIndex}
+        noFollow={siteSettings?.seo?.noFollow}
+      />
 
       {/* Hero */}
       <section className="relative min-h-[90vh] flex items-center overflow-hidden">

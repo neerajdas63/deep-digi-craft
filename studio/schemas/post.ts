@@ -45,6 +45,7 @@ export default defineType({
           { title: "Tech Gadgets", value: "Tech Gadgets" },
           { title: "Productivity", value: "Productivity" },
           { title: "Business", value: "Business" },
+          { title: "Entertainment", value: "Entertainment" },
           { title: "Technology", value: "Technology" },
         ],
       },

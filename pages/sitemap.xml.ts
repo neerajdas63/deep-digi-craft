@@ -1,5 +1,6 @@
 import { GetServerSideProps } from "next";
-import { categories } from "@/data/posts";
+import { categories, posts as staticPosts } from "@/data/posts";
+import { fetchSanityPosts } from "@/lib/sanity";
 
 const BASE_URL = "https://allblogsidea.com";
 
@@ -22,6 +23,8 @@ ${urlEntries}
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   const today = new Date().toISOString().split("T")[0];
+  const sanityPosts = await fetchSanityPosts();
+  const allPosts = [...sanityPosts, ...staticPosts];
 
   const staticPages: { loc: string; lastmod: string }[] = [
     { loc: `${BASE_URL}/`, lastmod: today },
@@ -35,7 +38,12 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
     lastmod: today,
   }));
 
-  const allUrls = [...staticPages, ...categoryPages];
+  const blogPosts = allPosts.map(({ slug, date }) => ({
+    loc: `${BASE_URL}/blog/${slug}`,
+    lastmod: new Date(date).toString() === "Invalid Date" ? today : new Date(date).toISOString().split("T")[0],
+  }));
+
+  const allUrls = [...staticPages, ...categoryPages, ...blogPosts];
   const sitemap = buildSitemapXml(allUrls);
 
   res.setHeader("Content-Type", "application/xml");

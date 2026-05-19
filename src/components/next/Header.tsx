@@ -18,6 +18,7 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [catOpen, setCatOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   // CHANGED: useLocation() → useRouter()
   const router = useRouter();
 
@@ -32,6 +33,14 @@ export default function Header() {
     setMobileOpen(false);
     setCatOpen(false);
   }, [router.pathname]);
+
+  const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const query = searchQuery.trim();
+    if (!query) return;
+    setSearchOpen(false);
+    router.push(`/blog?q=${encodeURIComponent(query)}`);
+  };
 
   return (
     <header
@@ -132,12 +141,16 @@ export default function Header() {
             className="container overflow-hidden"
           >
             <div className="py-3">
-              <input
-                autoFocus
-                type="text"
-                placeholder="Search articles..."
-                className="w-full bg-secondary rounded-xl px-4 py-3 text-sm outline-none ring-1 ring-border focus:ring-primary transition-all"
-              />
+              <form onSubmit={handleSearch}>
+                <input
+                  autoFocus
+                  type="search"
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  placeholder="Search articles..."
+                  className="w-full bg-secondary rounded-xl px-4 py-3 text-sm outline-none ring-1 ring-border focus:ring-primary transition-all"
+                />
+              </form>
             </div>
           </motion.div>
         )}

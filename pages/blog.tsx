@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { GetStaticProps } from "next";
+import { useRouter } from "next/router";
 import { posts as staticPosts, type Post } from "@/data/posts";
 import { fetchSanityPosts } from "@/lib/sanity";
 import BlogCard from "@/components/next/BlogCard";
@@ -7,7 +8,7 @@ import Newsletter from "@/components/Newsletter";
 import SEO from "@/components/next/SEO";
 import PageTransition from "@/components/PageTransition";
 
-const filters = ["All", "AI Tools", "Finance", "Trading", "Tech Gadgets", "Productivity", "Business", "Technology"];
+const filters = ["All", "AI Tools", "Finance", "Trading", "Tech Gadgets", "Productivity", "Business", "Entertainment", "Technology"];
 const sortOptions = ["Latest", "Popular", "Trending"];
 
 interface Props { allPosts: Post[] }
@@ -19,11 +20,22 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
 };
 
 export default function Blog({ allPosts }: Props) {
+  const router = useRouter();
   const [activeFilter, setActiveFilter] = useState("All");
   const [sortBy, setSortBy] = useState("Latest");
   const [visibleCount, setVisibleCount] = useState(6);
 
-  const filtered = activeFilter === "All" ? allPosts : allPosts.filter((p) => p.category === activeFilter);
+  const rawQuery = router.query.q;
+  const searchQuery = typeof rawQuery === "string" ? rawQuery.trim().toLowerCase() : "";
+  const categoryFiltered = activeFilter === "All" ? allPosts : allPosts.filter((p) => p.category === activeFilter);
+  const filtered = searchQuery
+    ? categoryFiltered.filter((post) =>
+        [post.title, post.excerpt, post.category, ...post.tags]
+          .join(" ")
+          .toLowerCase()
+          .includes(searchQuery)
+      )
+    : categoryFiltered;
 
   return (
     <PageTransition>
@@ -64,12 +76,32 @@ export default function Blog({ allPosts }: Props) {
           </div>
         </div>
 
+        {searchQuery && (
+          <div className="mb-6 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+            <span>
+              Search results for <span className="text-foreground font-medium">{rawQuery}</span>
+            </span>
+            <button
+              onClick={() => router.push("/blog")}
+              className="rounded-lg bg-secondary px-3 py-1.5 text-xs font-medium text-foreground hover:bg-secondary/80 transition-colors"
+            >
+              Clear
+            </button>
+          </div>
+        )}
+
         {/* Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filtered.slice(0, visibleCount).map((post) => (
-            <BlogCard key={post.id} post={post} />
-          ))}
-        </div>
+        {filtered.length > 0 ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filtered.slice(0, visibleCount).map((post) => (
+              <BlogCard key={post.id} post={post} />
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-xl border border-border bg-secondary/30 p-8 text-center text-muted-foreground">
+            No articles found.
+          </div>
+        )}
 
         {visibleCount < filtered.length && (
           <div className="text-center mt-10">

@@ -124,7 +124,9 @@ export default function Header() {
           </Link>
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden p-2 text-muted-foreground hover:text-foreground"
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileOpen}
+            className="relative z-50 md:hidden p-2 text-muted-foreground hover:text-foreground"
           >
             {mobileOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
@@ -166,11 +168,20 @@ export default function Header() {
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
             className="fixed inset-y-0 right-0 w-72 bg-background/95 backdrop-blur-xl border-l border-border p-6 pt-20 z-40"
           >
+            <button
+              type="button"
+              onClick={() => setMobileOpen(false)}
+              aria-label="Close menu"
+              className="absolute right-5 top-5 p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+            >
+              <X size={22} />
+            </button>
             <nav className="flex flex-col gap-2">
               {navLinks.map((link) => (
                 <Link
                   key={link.path}
                   href={link.path}
+                  onClick={() => setMobileOpen(false)}
                   className={`px-4 py-3 rounded-lg text-base font-medium transition-colors ${
                     router.pathname === link.path
                       ? "bg-primary/10 text-foreground"
@@ -186,6 +197,7 @@ export default function Header() {
                   <Link
                     key={cat.slug}
                     href={`/category/${cat.slug}`}
+                    onClick={() => setMobileOpen(false)}
                     className="block px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {cat.name}

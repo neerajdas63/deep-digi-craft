@@ -1,4 +1,5 @@
 import type { GetStaticPaths, GetStaticProps } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { PortableText } from "@portabletext/react";
@@ -178,21 +179,28 @@ export default function BlogPost({ post, related }: Props) {
 
       {/* Hero */}
       <div className="relative">
-        <div className="aspect-[21/9] max-h-[500px] overflow-hidden">
-          <img src={post.image} alt={post.title} className="w-full h-full object-cover" />
+        <div className="relative aspect-[4/3] max-h-[500px] overflow-hidden sm:aspect-[16/9] md:aspect-[21/9]">
+          <Image
+            src={post.image}
+            alt={post.title}
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
         </div>
-        <div className="absolute bottom-0 left-0 right-0">
-          <div className="container pb-10 pt-20">
+        <div className="relative bg-background md:absolute md:bottom-0 md:left-0 md:right-0 md:bg-transparent">
+          <div className="container pb-8 pt-6 md:pb-10 md:pt-20">
             {/* CHANGED: Link to= → Link href= */}
             <Link href="/blog" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors">
               <ArrowLeft size={16} /> Back to Blog
             </Link>
             <span className="category-pill mb-4 block w-fit">{post.category}</span>
-            <h1 className="font-heading text-3xl md:text-5xl font-bold leading-tight max-w-3xl mb-4">{post.title}</h1>
+            <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl font-bold leading-tight max-w-3xl mb-4 break-words">{post.title}</h1>
             <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
-                <img src={post.author.avatar} alt={post.author.name} className="w-8 h-8 rounded-full object-cover" />
+                <Image src={post.author.avatar} alt={post.author.name} width={32} height={32} className="w-8 h-8 rounded-full object-cover" />
                 <span className="font-medium text-foreground">{post.author.name}</span>
               </div>
               <div className="flex items-center gap-1"><Calendar size={14} />{post.date}</div>
@@ -203,7 +211,7 @@ export default function BlogPost({ post, related }: Props) {
       </div>
 
       {/* Content */}
-      <div className="container py-12">
+      <div className="container py-10 md:py-12">
         <div className="grid lg:grid-cols-[1fr_280px] gap-12 max-w-5xl mx-auto">
           <article className="max-w-none">
             {post.portableContent ? (
@@ -260,9 +268,9 @@ export default function BlogPost({ post, related }: Props) {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="max-w-3xl mx-auto mt-16 glass-card p-6 rounded-xl flex gap-5 items-start"
+          className="max-w-3xl mx-auto mt-16 glass-card p-5 sm:p-6 rounded-xl flex flex-col sm:flex-row gap-5 items-start"
         >
-          <img src={post.author.avatar} alt={post.author.name} className="w-16 h-16 rounded-full object-cover flex-shrink-0" />
+          <Image src={post.author.avatar} alt={post.author.name} width={64} height={64} className="w-16 h-16 rounded-full object-cover flex-shrink-0" />
           <div>
             <h4 className="font-heading font-semibold mb-1">Written by {post.author.name}</h4>
             <p className="text-sm text-muted-foreground leading-relaxed">

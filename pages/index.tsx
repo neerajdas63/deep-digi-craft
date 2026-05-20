@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { GetStaticProps } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, Bot, TrendingUp, BarChart3, Cpu, Zap, Briefcase } from "lucide-react";
@@ -83,7 +84,7 @@ export default function Home({ allPosts, siteSettings }: Props) {
       />
 
       {/* Hero */}
-      <section className="relative min-h-[90vh] flex items-center overflow-hidden">
+      <section className="relative min-h-[85svh] flex items-center overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-accent/5 animate-gradient-shift" style={{ backgroundSize: "200% 200%" }} />
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[120px] animate-glow-pulse" />
@@ -93,7 +94,7 @@ export default function Home({ allPosts, siteSettings }: Props) {
         <div className="container relative pt-32 pb-20">
           <div className="max-w-3xl">
             <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-              <h1 className="font-heading text-4xl sm:text-5xl md:text-7xl font-extrabold leading-[1.1] mb-6 text-balance">
+              <h1 className="font-heading text-4xl sm:text-5xl md:text-7xl font-extrabold leading-[1.1] mb-6 text-balance break-words">
                 Discover Tools That{" "}
                 <span className="gradient-text">Actually Work</span>
               </h1>
@@ -117,10 +118,10 @@ export default function Home({ allPosts, siteSettings }: Props) {
               className="flex flex-wrap gap-4"
             >
               {/* CHANGED: Link to= → Link href= */}
-              <Link href="/blog" className="btn-gradient py-3 px-8 text-sm inline-flex items-center gap-2">
+              <Link href="/blog" className="btn-gradient py-3 px-6 sm:px-8 text-sm inline-flex items-center gap-2">
                 Explore Articles <ArrowRight size={16} />
               </Link>
-              <a href="#featured" className="btn-outline-glow py-3 px-8 text-sm">
+              <a href="#featured" className="btn-outline-glow py-3 px-6 sm:px-8 text-sm">
                 Watch Reviews
               </a>
             </motion.div>
@@ -141,7 +142,7 @@ export default function Home({ allPosts, siteSettings }: Props) {
                 style={{ animationDelay: `${i * 0.1}s` }}
               >
                 <div className="flex gap-3">
-                  <img src={post.image} alt={post.title} className="w-16 h-16 rounded-lg object-cover flex-shrink-0" />
+                  <Image src={post.image} alt={post.title} width={64} height={64} className="w-16 h-16 rounded-lg object-cover flex-shrink-0" />
                   <div className="min-w-0">
                     <span className="text-[10px] text-primary font-medium">{post.category}</span>
                     <p className="text-sm font-medium leading-snug line-clamp-2">{post.title}</p>

@@ -1,5 +1,6 @@
 // Next.js version of SEO — uses next/head instead of react-helmet-async
 import Head from "next/head";
+import { useRouter } from "next/router";
 
 interface SEOProps {
   title: string;
@@ -37,11 +38,14 @@ export default function SEO({
   noIndex = false,
   noFollow = false,
 }: SEOProps) {
+  const router = useRouter();
   const siteName = "AllblogsIdea";
+  const siteUrl = "https://allblogsidea.com";
   const fullTitle = `${title} | ${siteName}`;
   const defaultImage = "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&h=630&fit=crop";
 
-  const resolvedCanonical = canonicalUrl || url || "";
+  const path = router.asPath?.split("?")[0] || "/";
+  const resolvedCanonical = canonicalUrl || url || `${siteUrl}${path}`;
   const resolvedOgTitle = ogTitle || fullTitle;
   const resolvedOgDescription = ogDescription || description;
   const resolvedOgImage = ogImage || image || defaultImage;
@@ -56,7 +60,7 @@ export default function SEO({
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
       <meta name="robots" content={robotsContent} />
-      {resolvedCanonical && <link rel="canonical" href={resolvedCanonical} />}
+      <link rel="canonical" href={resolvedCanonical} />
 
       {/* Open Graph */}
       <meta property="og:site_name" content={siteName} />
@@ -66,7 +70,7 @@ export default function SEO({
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
       <meta property="og:type" content={type} />
-      {resolvedCanonical && <meta property="og:url" content={resolvedCanonical} />}
+      <meta property="og:url" content={resolvedCanonical} />
 
       {/* Twitter / X */}
       <meta name="twitter:card" content="summary_large_image" />

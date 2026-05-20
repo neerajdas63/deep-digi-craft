@@ -16,6 +16,7 @@ const categoryLinks = [
   { name: "Tech Gadgets", path: "/category/tech-gadgets" },
   { name: "Productivity", path: "/category/productivity" },
   { name: "Business", path: "/category/business" },
+  { name: "Entertainment", path: "/category/entertainment" },
 ];
 
 const socials = [

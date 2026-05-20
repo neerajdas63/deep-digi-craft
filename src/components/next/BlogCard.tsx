@@ -1,5 +1,6 @@
 // Next.js version of BlogCard — uses next/link instead of react-router-dom Link
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import type { Post } from "@/data/posts";
 
@@ -20,11 +21,12 @@ export default function BlogCard({ post, featured }: BlogCardProps) {
         {/* CHANGED: Link to= → Link href= */}
         <Link href={`/blog/${post.slug}`} className="group block glass-card-hover overflow-hidden">
           <div className="relative aspect-[21/9] overflow-hidden">
-            <img
+            <Image
               src={post.image}
               alt={post.title}
+              fill
+              sizes="(min-width: 1024px) 1180px, 100vw"
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-              loading="lazy"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10">
@@ -34,7 +36,7 @@ export default function BlogCard({ post, featured }: BlogCardProps) {
               </h2>
               <p className="text-muted-foreground text-sm md:text-base max-w-2xl mb-4">{post.excerpt}</p>
               <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                <img src={post.author.avatar} alt={post.author.name} className="w-6 h-6 rounded-full object-cover" />
+                <Image src={post.author.avatar} alt={post.author.name} width={24} height={24} className="w-6 h-6 rounded-full object-cover" />
                 <span>{post.author.name}</span>
                 <span>·</span>
                 <span>{post.date}</span>
@@ -58,11 +60,12 @@ export default function BlogCard({ post, featured }: BlogCardProps) {
       {/* CHANGED: Link to= → Link href= */}
       <Link href={`/blog/${post.slug}`} className="group block glass-card-hover overflow-hidden h-full">
         <div className="relative aspect-video overflow-hidden">
-          <img
+          <Image
             src={post.image}
             alt={post.title}
+            fill
+            sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-            loading="lazy"
           />
           <div className="absolute top-3 left-3">
             <span className="category-pill text-[11px]">{post.category}</span>
@@ -74,7 +77,7 @@ export default function BlogCard({ post, featured }: BlogCardProps) {
           </h3>
           <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2 mb-4">{post.excerpt}</p>
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <img src={post.author.avatar} alt={post.author.name} className="w-5 h-5 rounded-full object-cover" />
+            <Image src={post.author.avatar} alt={post.author.name} width={20} height={20} className="w-5 h-5 rounded-full object-cover" />
             <span>{post.author.name}</span>
             <span>·</span>
             <span>{post.date}</span>

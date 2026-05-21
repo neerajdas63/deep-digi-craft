@@ -115,6 +115,9 @@ export default function Header() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => setSearchOpen(!searchOpen)}
+            type="button"
+            aria-label={searchOpen ? "Close search" : "Open search"}
+            aria-expanded={searchOpen}
             className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
           >
             <Search size={18} />
@@ -123,6 +126,7 @@ export default function Header() {
             Subscribe
           </Link>
           <button
+            type="button"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileOpen}

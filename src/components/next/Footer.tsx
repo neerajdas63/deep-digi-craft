@@ -20,10 +20,10 @@ const categoryLinks = [
 ];
 
 const socials = [
-  { icon: Twitter, href: "#" },
-  { icon: Youtube, href: "#" },
-  { icon: Linkedin, href: "#" },
-  { icon: Github, href: "#" },
+  { icon: Twitter, href: "https://x.com/", label: "Follow AllblogsIdea on X" },
+  { icon: Youtube, href: "https://www.youtube.com/", label: "Follow AllblogsIdea on YouTube" },
+  { icon: Linkedin, href: "https://www.linkedin.com/", label: "Follow AllblogsIdea on LinkedIn" },
+  { icon: Github, href: "https://github.com/", label: "Follow AllblogsIdea on GitHub" },
 ];
 
 export default function Footer() {
@@ -38,8 +38,15 @@ export default function Footer() {
               Honest reviews, sharp insights, and actionable advice on AI tools, tech, and finance for the modern Indian professional.
             </p>
             <div className="flex gap-3 mt-5">
-              {socials.map(({ icon: Icon, href }, i) => (
-                <a key={i} href={href} className="p-2 rounded-lg bg-secondary text-muted-foreground hover:text-foreground hover:bg-primary/20 transition-colors">
+              {socials.map(({ icon: Icon, href, label }) => (
+                <a
+                  key={label}
+                  href={href}
+                  aria-label={label}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-lg bg-secondary text-muted-foreground hover:text-foreground hover:bg-primary/20 transition-colors"
+                >
                   <Icon size={16} />
                 </a>
               ))}
@@ -48,7 +55,7 @@ export default function Footer() {
 
           {/* Quick Links — CHANGED: Link to= → Link href= */}
           <div>
-            <h4 className="font-heading text-sm font-semibold mb-4">Quick Links</h4>
+            <p className="font-heading text-sm font-semibold mb-4">Quick Links</p>
             <ul className="space-y-2">
               {quickLinks.map((l) => (
                 <li key={l.path}>
@@ -60,7 +67,7 @@ export default function Footer() {
 
           {/* Categories — CHANGED: Link to= → Link href= */}
           <div>
-            <h4 className="font-heading text-sm font-semibold mb-4">Categories</h4>
+            <p className="font-heading text-sm font-semibold mb-4">Categories</p>
             <ul className="space-y-2">
               {categoryLinks.map((l) => (
                 <li key={l.path}>
@@ -72,7 +79,7 @@ export default function Footer() {
 
           {/* Newsletter */}
           <div>
-            <h4 className="font-heading text-sm font-semibold mb-4">Stay Updated</h4>
+            <p className="font-heading text-sm font-semibold mb-4">Stay Updated</p>
             <p className="text-sm text-muted-foreground mb-3">Get the latest AI tool reviews delivered weekly.</p>
             <form onSubmit={(e) => e.preventDefault()} className="flex gap-2">
               <input

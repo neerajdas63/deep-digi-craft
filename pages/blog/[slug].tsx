@@ -139,8 +139,7 @@ export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
 export default function BlogPost({ post, related }: Props) {
   const { tocItems, portableHeadingIds, content } = preparePostContent(post);
 
-  // window.location.href is safe here (client-side only — guarded)
-  const shareUrl = typeof window !== "undefined" ? window.location.href : "";
+  const shareUrl = post.seo?.canonicalUrl || `https://allblogsidea.com/blog/${post.slug}`;
   const shareLinks = [
     { icon: Twitter, href: `https://twitter.com/intent/tweet?url=${shareUrl}&text=${post.title}`, label: "X" },
     { icon: MessageCircle, href: `https://wa.me/?text=${post.title} ${shareUrl}`, label: "WhatsApp" },
@@ -334,11 +333,13 @@ export default function BlogPost({ post, related }: Props) {
                 <h4 className="font-heading text-sm font-semibold mb-4 flex items-center gap-2"><Share2 size={16} /> Share</h4>
                 <div className="flex gap-2">
                   {shareLinks.map(({ icon: Icon, href, label }) => (
-                    <a key={label} href={href} target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-lg bg-secondary text-muted-foreground hover:text-foreground hover:bg-primary/20 transition-colors">
+                    <a key={label} href={href} aria-label={`Share on ${label}`} target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-lg bg-secondary text-muted-foreground hover:text-foreground hover:bg-primary/20 transition-colors">
                       <Icon size={16} />
                     </a>
                   ))}
                   <button
+                    type="button"
+                    aria-label="Copy post link"
                     onClick={() => navigator.clipboard.writeText(shareUrl)}
                     className="p-2.5 rounded-lg bg-secondary text-muted-foreground hover:text-foreground hover:bg-primary/20 transition-colors"
                   >

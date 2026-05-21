@@ -14,6 +14,9 @@ import PageTransition from "@/components/PageTransition";
 const iconMap: Record<string, React.ElementType> = { Bot, TrendingUp, BarChart3, Cpu, Zap, Briefcase };
 
 const typewriterWords = ["AI Tools", "Finance Tips", "Tech Reviews", "Trading Strategies"];
+const homeSeoTitle = "AllblogsIdea - AI Tools, Tech Reviews & Finance Tips";
+const homeSeoDescription =
+  "Read honest AI tool reviews, tech guides, trading insights, and finance tips for Indian professionals on AllblogsIdea.";
 
 function useTypewriter(words: string[], speed = 100, pause = 2000) {
   const [text, setText] = useState("");
@@ -70,8 +73,9 @@ export default function Home({ allPosts, siteSettings }: Props) {
   return (
     <PageTransition>
       <SEO
-        title={siteSettings?.seo?.metaTitle || "Home"}
-        description={siteSettings?.seo?.metaDescription || "Discover the best AI tools, tech reviews, and finance tips for young Indian professionals."}
+        title={siteSettings?.seo?.metaTitle || homeSeoTitle}
+        description={siteSettings?.seo?.metaDescription || homeSeoDescription}
+        appendSiteName={false}
         ogTitle={siteSettings?.seo?.ogTitle}
         ogDescription={siteSettings?.seo?.ogDescription}
         ogImage={siteSettings?.seo?.ogImage}

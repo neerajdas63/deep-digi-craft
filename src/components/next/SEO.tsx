@@ -19,6 +19,7 @@ interface SEOProps {
   canonicalUrl?: string;
   noIndex?: boolean;
   noFollow?: boolean;
+  appendSiteName?: boolean;
 }
 
 export default function SEO({
@@ -37,11 +38,12 @@ export default function SEO({
   canonicalUrl,
   noIndex = false,
   noFollow = false,
+  appendSiteName = true,
 }: SEOProps) {
   const router = useRouter();
   const siteName = "AllblogsIdea";
   const siteUrl = "https://allblogsidea.com";
-  const fullTitle = `${title} | ${siteName}`;
+  const fullTitle = appendSiteName ? `${title} | ${siteName}` : title;
   const defaultImage = "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&h=630&fit=crop";
 
   const path = router.asPath?.split("?")[0] || "/";

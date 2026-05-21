@@ -16,6 +16,97 @@ interface Props {
   related: Post[];
 }
 
+interface TocItem {
+  id: string;
+  text: string;
+  level: 2 | 3;
+}
+
+const stripHtml = (value: string) =>
+  value
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, "\"")
+    .replace(/&#39;/g, "'")
+    .trim();
+
+const slugifyHeading = (value: string, counts: Record<string, number>) => {
+  const base =
+    value
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, "")
+      .trim()
+      .replace(/\s+/g, "-") || "section";
+  const safeBase = /^[a-z]/.test(base) ? base : `section-${base}`;
+  counts[safeBase] = (counts[safeBase] ?? 0) + 1;
+  return counts[safeBase] === 1 ? safeBase : `${safeBase}-${counts[safeBase]}`;
+};
+
+const getPortableText = (block: any) =>
+  (block?.children ?? [])
+    .map((child: any) => child?.text ?? "")
+    .join("")
+    .trim();
+
+const preparePostContent = (post: Post) => {
+  const counts: Record<string, number> = {};
+  const tocItems: TocItem[] = [];
+  const portableHeadingIds = new Map<string, string>();
+
+  if (post.portableContent) {
+    post.portableContent.forEach((block: any) => {
+      if (block?._type !== "block" || (block.style !== "h2" && block.style !== "h3")) return;
+      const text = getPortableText(block);
+      if (!text) return;
+      const id = slugifyHeading(text, counts);
+      tocItems.push({ id, text, level: block.style === "h3" ? 3 : 2 });
+      if (block._key) portableHeadingIds.set(block._key, id);
+    });
+
+    return { tocItems, portableHeadingIds, content: post.content };
+  }
+
+  const content = post.content.replace(
+    /<h([23])([^>]*)>([\s\S]*?)<\/h\1>/gi,
+    (match, level: string, attrs: string, inner: string) => {
+      const text = stripHtml(inner);
+      if (!text) return match;
+
+      const idMatch = attrs.match(/\sid=(["'])(.*?)\1/i);
+      const id = idMatch?.[2] || slugifyHeading(text, counts);
+      tocItems.push({ id, text, level: level === "3" ? 3 : 2 });
+
+      const nextAttrs = idMatch ? attrs : `${attrs} id="${id}"`;
+      return `<h${level}${nextAttrs}>${inner}</h${level}>`;
+    }
+  );
+
+  return { tocItems, portableHeadingIds, content };
+};
+
+function TableOfContents({ items }: { items: TocItem[] }) {
+  if (items.length === 0) return null;
+
+  return (
+    <nav className="glass-card p-5 rounded-xl" aria-label="Table of contents">
+      <h4 className="font-heading text-sm font-semibold mb-4">Table of Contents</h4>
+      <ol className="space-y-2">
+        {items.map((item) => (
+          <li key={item.id} className={item.level === 3 ? "pl-4" : undefined}>
+            <a
+              href={`#${item.id}`}
+              className="block text-sm leading-snug text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {item.text}
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  );
+}
+
 export const getStaticPaths: GetStaticPaths = async () => {
   const sanitySlugs = await fetchSanitySlugs();
   const staticSlugs = staticPosts.map((p) => p.slug);
@@ -46,6 +137,7 @@ export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
 };
 
 export default function BlogPost({ post, related }: Props) {
+  const { tocItems, portableHeadingIds, content } = preparePostContent(post);
 
   // window.location.href is safe here (client-side only — guarded)
   const shareUrl = typeof window !== "undefined" ? window.location.href : "";
@@ -61,11 +153,11 @@ export default function BlogPost({ post, related }: Props) {
       normal: ({ children }: any) => (
         <p className="text-muted-foreground leading-relaxed mb-5">{children}</p>
       ),
-      h2: ({ children }: any) => (
-        <h2 className="font-heading text-2xl md:text-3xl font-bold text-foreground mt-12 mb-4">{children}</h2>
+      h2: ({ children, value }: any) => (
+        <h2 id={value?._key ? portableHeadingIds.get(value._key) : undefined} className="font-heading text-2xl md:text-3xl font-bold text-foreground mt-12 mb-4 scroll-mt-28">{children}</h2>
       ),
-      h3: ({ children }: any) => (
-        <h3 className="font-heading text-xl md:text-2xl font-bold text-foreground mt-10 mb-3">{children}</h3>
+      h3: ({ children, value }: any) => (
+        <h3 id={value?._key ? portableHeadingIds.get(value._key) : undefined} className="font-heading text-xl md:text-2xl font-bold text-foreground mt-10 mb-3 scroll-mt-28">{children}</h3>
       ),
       h4: ({ children }: any) => (
         <h4 className="font-heading text-lg font-bold text-foreground mt-8 mb-2">{children}</h4>
@@ -214,17 +306,20 @@ export default function BlogPost({ post, related }: Props) {
       <div className="container py-10 md:py-12">
         <div className="grid lg:grid-cols-[1fr_280px] gap-12 max-w-5xl mx-auto">
           <article className="max-w-none">
+            <div className="mb-8 lg:hidden">
+              <TableOfContents items={tocItems} />
+            </div>
             {post.portableContent ? (
               <PortableText value={post.portableContent} components={portableTextComponents} />
             ) : (
               <div
                 className="prose prose-invert prose-lg max-w-none
-                  prose-headings:font-heading prose-headings:font-bold prose-headings:text-foreground
+                  prose-headings:font-heading prose-headings:font-bold prose-headings:text-foreground prose-headings:scroll-mt-28
                   prose-p:text-muted-foreground prose-p:leading-relaxed
                   prose-a:text-primary prose-a:no-underline hover:prose-a:underline
                   prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:pl-6 prose-blockquote:italic prose-blockquote:text-muted-foreground
                   prose-strong:text-foreground prose-code:text-accent"
-                dangerouslySetInnerHTML={{ __html: post.content }}
+                dangerouslySetInnerHTML={{ __html: content }}
               />
             )}
           </article>
@@ -232,6 +327,8 @@ export default function BlogPost({ post, related }: Props) {
           {/* Sidebar */}
           <aside className="hidden lg:block">
             <div className="sticky top-28 space-y-6">
+              <TableOfContents items={tocItems} />
+
               {/* Share */}
               <div className="glass-card p-5 rounded-xl">
                 <h4 className="font-heading text-sm font-semibold mb-4 flex items-center gap-2"><Share2 size={16} /> Share</h4>

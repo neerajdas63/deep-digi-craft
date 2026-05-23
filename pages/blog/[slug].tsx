@@ -190,7 +190,11 @@ export default function BlogPost({ post, related }: Props) {
         <a
           href={value?.href}
           target={value?.href?.startsWith("http") ? "_blank" : undefined}
-          rel="noopener noreferrer"
+          rel={[
+            value?.href?.startsWith("http") ? "noopener noreferrer" : "",
+            value?.noFollow ? "nofollow" : "",
+            value?.sponsored ? "sponsored" : "",
+          ].filter(Boolean).join(" ") || undefined}
           className="text-primary underline hover:opacity-80 transition-opacity"
         >
           {children}

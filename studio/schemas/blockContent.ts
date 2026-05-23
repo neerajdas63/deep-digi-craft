@@ -43,6 +43,20 @@ export default defineType({
                 validation: (Rule) =>
                   Rule.uri({ allowRelative: true, scheme: ["http", "https", "mailto"] }),
               }),
+              defineField({
+                title: "No Follow",
+                name: "noFollow",
+                type: "boolean",
+                description: "Add rel=\"nofollow\" to this specific link.",
+                initialValue: false,
+              }),
+              defineField({
+                title: "Sponsored",
+                name: "sponsored",
+                type: "boolean",
+                description: "Use for affiliate, paid, or sponsored links.",
+                initialValue: false,
+              }),
             ],
           },
         ],

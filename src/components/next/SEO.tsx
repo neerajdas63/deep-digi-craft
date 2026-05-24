@@ -60,6 +60,7 @@ export default function SEO({
   return (
     <Head>
       <title>{fullTitle}</title>
+      <meta name="bm-site-verification" content="f72e8a16babd00f1d5bb8c9d52787dde61d0a575" />
       <meta name="description" content={description} />
       <meta name="robots" content={robotsContent} />
       <link rel="canonical" href={resolvedCanonical} />

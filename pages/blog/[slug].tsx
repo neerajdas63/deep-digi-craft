@@ -162,7 +162,7 @@ export default function BlogPost({ post, related }: Props) {
         <h4 className="font-heading text-lg font-bold text-foreground mt-8 mb-2">{children}</h4>
       ),
       blockquote: ({ children }: any) => (
-        <blockquote className="border-l-4 border-primary pl-5 italic text-muted-foreground my-6">
+        <blockquote className="my-8 border-l-4 border-primary pl-6 text-lg font-semibold italic leading-relaxed text-primary">
           {children}
         </blockquote>
       ),
@@ -320,7 +320,7 @@ export default function BlogPost({ post, related }: Props) {
                   prose-headings:font-heading prose-headings:font-bold prose-headings:text-foreground prose-headings:scroll-mt-28
                   prose-p:text-muted-foreground prose-p:leading-relaxed
                   prose-a:text-primary prose-a:no-underline hover:prose-a:underline
-                  prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:pl-6 prose-blockquote:italic prose-blockquote:text-muted-foreground
+                  prose-blockquote:my-8 prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:pl-6 prose-blockquote:text-lg prose-blockquote:font-semibold prose-blockquote:italic prose-blockquote:leading-relaxed prose-blockquote:text-primary
                   prose-strong:text-foreground prose-code:text-accent"
                 dangerouslySetInnerHTML={{ __html: content }}
               />

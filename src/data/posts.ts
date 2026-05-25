@@ -13,6 +13,11 @@ export interface PostSEO {
   twitterImage?: string;
 }
 
+export interface PostFAQ {
+  question: string;
+  answer: string;
+}
+
 export interface Post {
   id: string;
   slug: string;
@@ -28,6 +33,7 @@ export interface Post {
   readTime: string;
   tags: string[];
   featured?: boolean;
+  faqs?: PostFAQ[];
   /** Full RankMath-style SEO fields — set in Sanity Studio */
   seo?: PostSEO;
 }

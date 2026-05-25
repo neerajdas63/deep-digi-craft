@@ -42,6 +42,14 @@ function transformPost(raw: any, includeBody = false): Post {
     readTime: raw.readTime ?? "5 min read",
     tags: Array.isArray(raw.tags) ? raw.tags : [],
     featured: raw.featured ?? false,
+    faqs: Array.isArray(raw.faqs)
+      ? raw.faqs
+          .filter((faq: any) => faq?.question && faq?.answer)
+          .map((faq: any) => ({
+            question: String(faq.question),
+            answer: String(faq.answer),
+          }))
+      : [],
     ...(raw.seo ? { seo: raw.seo } : {}),
   };
 }
@@ -49,7 +57,7 @@ function transformPost(raw: any, includeBody = false): Post {
 const SEO_FIELDS = `seo { metaTitle, metaDescription, focusKeyword, canonicalUrl, noIndex, noFollow, ogTitle, ogDescription, ogImage, twitterTitle, twitterDescription, twitterImage }`;
 
 const LIST_FIELDS = `
-  _id, title, slug, excerpt, mainImage, publishedAt, category, readTime, tags, featured,
+  _id, title, slug, excerpt, mainImage, publishedAt, category, readTime, tags, featured, faqs,
   ${SEO_FIELDS},
   "authorName": coalesce(author->name, author),
   "authorAvatar": author->avatar,

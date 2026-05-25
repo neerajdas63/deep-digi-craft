@@ -95,6 +95,38 @@ export default defineType({
       type: "seo",
       description: "Search engine & social media optimisation settings for this post.",
     }),
+    defineField({
+      name: "faqs",
+      title: "FAQs",
+      type: "array",
+      description:
+        "Optional FAQ section shown at the end of the article and used for FAQPage structured data.",
+      of: [
+        {
+          type: "object",
+          name: "faq",
+          title: "FAQ",
+          fields: [
+            defineField({
+              name: "question",
+              title: "Question",
+              type: "string",
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: "answer",
+              title: "Answer",
+              type: "text",
+              rows: 3,
+              validation: (Rule) => Rule.required(),
+            }),
+          ],
+          preview: {
+            select: { title: "question", subtitle: "answer" },
+          },
+        },
+      ],
+    }),
   ],
   preview: {
     select: {

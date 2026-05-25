@@ -1,4 +1,5 @@
 import type { GetStaticPaths, GetStaticProps } from "next";
+import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -107,6 +108,28 @@ function TableOfContents({ items }: { items: TocItem[] }) {
   );
 }
 
+function FAQSection({ faqs }: { faqs: NonNullable<Post["faqs"]> }) {
+  if (faqs.length === 0) return null;
+
+  return (
+    <section className="mt-14 border-t border-border pt-10" aria-labelledby="faq-heading">
+      <h2 id="faq-heading" className="font-heading text-2xl md:text-3xl font-bold text-foreground mb-6">
+        Frequently Asked Questions
+      </h2>
+      <div className="space-y-4">
+        {faqs.map((faq) => (
+          <details key={faq.question} className="glass-card rounded-xl p-5 group">
+            <summary className="cursor-pointer list-none font-heading text-base font-semibold text-foreground">
+              {faq.question}
+            </summary>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{faq.answer}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export const getStaticPaths: GetStaticPaths = async () => {
   const sanitySlugs = await fetchSanitySlugs();
   const staticSlugs = staticPosts.map((p) => p.slug);
@@ -138,6 +161,22 @@ export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
 
 export default function BlogPost({ post, related }: Props) {
   const { tocItems, portableHeadingIds, content } = preparePostContent(post);
+  const faqs = post.faqs ?? [];
+  const faqJsonLd =
+    faqs.length > 0
+      ? {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faqs.map((faq) => ({
+            "@type": "Question",
+            name: faq.question,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: faq.answer,
+            },
+          })),
+        }
+      : null;
 
   const shareUrl = post.seo?.canonicalUrl || `https://allblogsidea.com/blog/${post.slug}`;
   const shareLinks = [
@@ -281,6 +320,14 @@ export default function BlogPost({ post, related }: Props) {
         noIndex={post.seo?.noIndex}
         noFollow={post.seo?.noFollow}
       />
+      {faqJsonLd && (
+        <Head>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+          />
+        </Head>
+      )}
 
       {/* Hero */}
       <div className="relative">
@@ -335,6 +382,7 @@ export default function BlogPost({ post, related }: Props) {
                 dangerouslySetInnerHTML={{ __html: content }}
               />
             )}
+            <FAQSection faqs={faqs} />
           </article>
 
           {/* Sidebar */}

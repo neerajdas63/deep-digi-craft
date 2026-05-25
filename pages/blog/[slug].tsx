@@ -238,6 +238,16 @@ export default function BlogPost({ post, related }: Props) {
           </table>
         </div>
       ),
+      pullQuote: ({ value }: any) => (
+        <blockquote className="my-8 border-l-4 border-primary pl-6 text-lg font-semibold italic leading-relaxed text-primary">
+          <p>{value.quote}</p>
+          {value.source && (
+            <cite className="mt-3 block text-sm not-italic text-muted-foreground">
+              {value.source}
+            </cite>
+          )}
+        </blockquote>
+      ),
       image: ({ value }: any) => {
         const src = value.imageUrl ?? value.asset?.url;
         if (!src) return null;

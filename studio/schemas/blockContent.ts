@@ -62,6 +62,36 @@ export default defineType({
         ],
       },
     }),
+    // Pull quote block for standout quoted lines inside articles
+    defineArrayMember({
+      type: "object",
+      name: "pullQuote",
+      title: "Pull Quote",
+      fields: [
+        defineField({
+          name: "quote",
+          title: "Quote",
+          type: "text",
+          rows: 3,
+          validation: (Rule) => Rule.required(),
+        }),
+        defineField({
+          name: "source",
+          title: "Source",
+          type: "string",
+          description: "Optional attribution shown below the quote.",
+        }),
+      ],
+      preview: {
+        select: { title: "quote", subtitle: "source" },
+        prepare({ title, subtitle }) {
+          return {
+            title: title ? `"${title}"` : "Pull Quote",
+            subtitle,
+          };
+        },
+      },
+    }),
     // Inline images inside the post body
     defineArrayMember({
       type: "image",

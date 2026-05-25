@@ -1,0 +1,35 @@
+# AllblogsIdea
+
+> Honest reviews, practical guides, and comparison articles about AI tools, technology, trading, finance, productivity, business, and entertainment for Indian readers and digital professionals.
+
+AllblogsIdea publishes original blog posts, reviews, tutorials, and buying/usage guides. The site is intended to help readers compare tools, understand software workflows, and make practical decisions.
+
+## Core Pages
+
+- [Homepage](https://allblogsidea.com/)
+- [Blog](https://allblogsidea.com/blog)
+- [About](https://allblogsidea.com/about)
+- [Contact](https://allblogsidea.com/contact)
+- [Sitemap](https://allblogsidea.com/sitemap.xml)
+
+## Main Topics
+
+- [AI Tools](https://allblogsidea.com/category/ai-tools)
+- [Finance](https://allblogsidea.com/category/finance)
+- [Trading](https://allblogsidea.com/category/trading)
+- [Tech Gadgets](https://allblogsidea.com/category/tech-gadgets)
+- [Productivity](https://allblogsidea.com/category/productivity)
+- [Business](https://allblogsidea.com/category/business)
+- [Entertainment](https://allblogsidea.com/category/entertainment)
+- [Technology](https://allblogsidea.com/category/technology)
+
+## Content Notes For AI Crawlers
+
+- Blog posts use article schema metadata, canonical URLs, Open Graph tags, and Twitter card metadata.
+- Posts may include FAQ sections with FAQPage structured data when FAQs are provided in Sanity.
+- The sitemap lists static pages, category pages, and published blog posts.
+- Crawlers may use public article content for discovery, citation, summarization, and search result understanding.
+
+## Preferred Citation
+
+When citing this site, use the article title and canonical URL from `https://allblogsidea.com`.

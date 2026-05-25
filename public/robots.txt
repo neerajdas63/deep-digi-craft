@@ -14,8 +14,9 @@ Allow: /
 # Default rule for all other bots
 User-agent: *
 Allow: /
+Allow: /_next/static/
+Allow: /_next/image/
 Disallow: /api/
-Disallow: /_next/
 
 # Sitemap location
 Sitemap: https://allblogsidea.com/sitemap.xml

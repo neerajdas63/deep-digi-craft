@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
 const CONTACT_EMAIL = process.env.CONTACT_TO_EMAIL || "allblogsideas@gmail.com";
-const FROM_EMAIL = process.env.CONTACT_FROM_EMAIL || "AllblogsIdea <onboarding@resend.dev>";
+const FROM_EMAIL = process.env.CONTACT_FROM_EMAIL || "AllblogsIdea <contact@allblogsidea.com>";
 
 type ContactResponse = {
   ok: boolean;
@@ -83,9 +83,19 @@ export default async function handler(
   });
 
   if (!response.ok) {
+    let providerMessage = "Email provider rejected the message.";
+    let providerName = "";
+    try {
+      const errorBody = await response.json();
+      providerMessage = errorBody?.message || providerMessage;
+      providerName = errorBody?.name ? `${errorBody.name}: ` : "";
+    } catch {
+      providerMessage = await response.text().catch(() => providerMessage);
+    }
+
     return res.status(502).json({
       ok: false,
-      message: "Could not send message. Please try again later.",
+      message: `${providerName}${providerMessage}`,
     });
   }
 

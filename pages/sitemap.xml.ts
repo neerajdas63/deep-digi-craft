@@ -30,6 +30,7 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
     { loc: `${BASE_URL}/`, lastmod: today },
     { loc: `${BASE_URL}/blog`, lastmod: today },
     { loc: `${BASE_URL}/about`, lastmod: today },
+    { loc: `${BASE_URL}/write-for-us`, lastmod: today },
     { loc: `${BASE_URL}/contact`, lastmod: today },
   ];
 

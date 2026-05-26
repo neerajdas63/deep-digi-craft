@@ -6,6 +6,7 @@ const quickLinks = [
   { name: "Home", path: "/" },
   { name: "Blog", path: "/blog" },
   { name: "About", path: "/about" },
+  { name: "Write for Us", path: "/write-for-us" },
   { name: "Contact", path: "/contact" },
 ];
 
